@@ -64,23 +64,42 @@ public class DadosExemplo {
         Jogo cs2 = new Jogo(2, "Counter-Strike 2", 0.0, LocalDate.of(2023, 9, 27));
         Jogo eldenRing = new Jogo(3, "Elden Ring", 249.90, LocalDate.of(2022, 2, 25));
         Jogo zelda = new Jogo(4, "The Legend of Zelda: Tears of the Kingdom", 349.90, LocalDate.of(2023, 5, 12));
+        Jogo portal2 = new Jogo(5, "Portal 2", 49.90, LocalDate.of(2011, 4, 19));
+        Jogo godOfWar = new Jogo(6, "God of War Ragnarök", 299.90, LocalDate.of(2022, 11, 9));
+        Jogo animalCrossing = new Jogo(7, "Animal Crossing: New Horizons", 249.90, LocalDate.of(2020, 3, 20));
+        Jogo hades = new Jogo(8, "Hades", 89.90, LocalDate.of(2020, 9, 17));
 
         thatgamecompany.adicionarJogo(sky);
         valve.adicionarJogo(cs2);
+        valve.adicionarJogo(portal2);
+        sony.adicionarJogo(eldenRing);
+        sony.adicionarJogo(godOfWar);
+        nintendo.adicionarJogo(zelda);
+        nintendo.adicionarJogo(animalCrossing);
+        thatgamecompany.adicionarJogo(hades);
 
         sky.adicionarPlataforma(pc);
         sky.adicionarPlataforma(switchPlat);
         sky.adicionarPlataforma(ps5);
         cs2.adicionarPlataforma(pc);
         cs2.adicionarPlataforma(steamDeck);
+        portal2.adicionarPlataforma(pc);
+        portal2.adicionarPlataforma(steamDeck);
         eldenRing.adicionarPlataforma(pc);
         eldenRing.adicionarPlataforma(ps5);
+        godOfWar.adicionarPlataforma(ps5);
         zelda.adicionarPlataforma(switchPlat);
+        animalCrossing.adicionarPlataforma(switchPlat);
+        hades.adicionarPlataforma(pc);
 
         repo.adicionarJogo(sky);
         repo.adicionarJogo(cs2);
         repo.adicionarJogo(eldenRing);
         repo.adicionarJogo(zelda);
+        repo.adicionarJogo(portal2);
+        repo.adicionarJogo(godOfWar);
+        repo.adicionarJogo(animalCrossing);
+        repo.adicionarJogo(hades);
 
         // Complementos
         Complemento dlcSky = new Complemento(1, "Season of Passage", 29.90, TipoComplemento.EXPANSAO);
