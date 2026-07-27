@@ -15,6 +15,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
@@ -46,6 +48,7 @@ public class TelaInicialApp extends Application {
     private FlowPane catalogoGrid;
     private BorderPane rootLayout;
     private Label userLabel;
+    private ImageView bannerImageView;
 
     private String currentNickname = "TSUKI_11";
     private boolean bibliotecaAtiva = false;
@@ -90,11 +93,8 @@ public class TelaInicialApp extends Application {
         bibliotecaBtn.setOnAction(e -> exibirBiblioteca());
         Button gerenciarBtn = criarBotaoNav("GERENCIAR");
         gerenciarBtn.setOnAction(e -> exibirGerenciamento());
-        Button comunidadeBtn = criarBotaoNav("COMUNIDADE");
-        Button jogosBtn = criarBotaoNav("JOGOS");
-        Button ajudaBtn = criarBotaoNav("AJUDA");
 
-        HBox navEsquerda = new HBox(4, logo, espaco(18), lojaBtn, bibliotecaBtn, gerenciarBtn, comunidadeBtn, jogosBtn, ajudaBtn);
+        HBox navEsquerda = new HBox(4, logo, espaco(18), lojaBtn, bibliotecaBtn, gerenciarBtn);
         navEsquerda.setAlignment(Pos.CENTER_LEFT);
 
         Region espacador = new Region();
@@ -201,10 +201,16 @@ public class TelaInicialApp extends Application {
         textoBox.setMaxWidth(560);
         HBox.setHgrow(textoBox, Priority.ALWAYS);
 
-        StackPane imagem = new StackPane(criarLabelPlaceholder("IMAGEM DE CAPA"));
+        StackPane imagem = new StackPane();
         imagem.getStyleClass().add("banner-image-placeholder");
         imagem.setPrefSize(380, 210);
         imagem.setMinSize(380, 210);
+        bannerImageView = criarImagemResource("/images/sky1.jpg", 380, 210);
+        if (bannerImageView != null) {
+            imagem.getChildren().add(bannerImageView);
+        } else {
+            imagem.getChildren().add(criarLabelPlaceholder("IMAGEM DE CAPA"));
+        }
 
         banner.getChildren().addAll(textoBox, imagem);
         return banner;
@@ -257,9 +263,16 @@ public class TelaInicialApp extends Application {
     }
 
     private VBox criarCardDestaque(Jogo jogo, int index) {
-        StackPane imagem = new StackPane(criarLabelPlaceholder(jogo.getTitulo()));
+        StackPane imagem = new StackPane();
         imagem.getStyleClass().add("card-image-placeholder");
         imagem.setPrefSize(280, 130);
+        String caminhoImagem = jogo.getImagemCapa() != null ? jogo.getImagemCapa() : "/images/capsule_616x353.jpg";
+        ImageView cardImage = criarImagemResource(caminhoImagem, 280, 130);
+        if (cardImage != null) {
+            imagem.getChildren().add(cardImage);
+        } else {
+            imagem.getChildren().add(criarLabelPlaceholder(jogo.getTitulo()));
+        }
 
         Label badge = new Label(index == 0 ? "POPULAR" : index == 1 ? "RECOMENDADO" : "NOVO");
         badge.getStyleClass().add("badge");
@@ -279,7 +292,10 @@ public class TelaInicialApp extends Application {
         VBox card = new VBox(10, imagem, badge, titulo, descricao, preco);
         card.getStyleClass().add("game-card");
         card.setPrefWidth(300);
-        card.setOnMouseClicked(e -> exibirDetalhesJogo(jogo));
+        card.setOnMouseClicked(e -> {
+            atualizarBannerDoJogo(jogo);
+            exibirDetalhesJogo(jogo);
+        });
         return card;
     }
 
@@ -454,6 +470,41 @@ public class TelaInicialApp extends Application {
 
     private String formatarPreco(Jogo jogo) {
         return jogo.getPreco() <= 0.0 ? "Grátis" : String.format("R$ %.2f", jogo.getPreco());
+    }
+
+    private ImageView criarImagemResource(String caminho, double largura, double altura) {
+        try {
+            Image imagem = carregarImagem(caminho);
+            if (imagem == null) {
+                return null;
+            }
+            ImageView view = new ImageView(imagem);
+            view.setFitWidth(largura);
+            view.setFitHeight(altura);
+            view.setPreserveRatio(true);
+            view.setSmooth(true);
+            return view;
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    private Image carregarImagem(String caminho) {
+        if (getClass().getResource(caminho) == null) {
+            return null;
+        }
+        return new Image(getClass().getResource(caminho).toExternalForm(), false);
+    }
+
+    private void atualizarBannerDoJogo(Jogo jogo) {
+        if (bannerImageView == null) {
+            return;
+        }
+        String caminho = jogo.getImagemCapa() != null ? jogo.getImagemCapa() : "/images/header.jpg";
+        Image imagem = carregarImagem(caminho);
+        if (imagem != null) {
+            bannerImageView.setImage(imagem);
+        }
     }
 
     public static void main(String[] args) {

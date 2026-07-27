@@ -60,14 +60,14 @@ public class DadosExemplo {
         repo.adicionarPlataforma(steamDeck);
 
         // Jogos
-        Jogo sky = new Jogo(1, "Sky: Children of the Light", 0.0, LocalDate.of(2019, 7, 18));
-        Jogo cs2 = new Jogo(2, "Counter-Strike 2", 0.0, LocalDate.of(2023, 9, 27));
-        Jogo eldenRing = new Jogo(3, "Elden Ring", 249.90, LocalDate.of(2022, 2, 25));
-        Jogo zelda = new Jogo(4, "The Legend of Zelda: Tears of the Kingdom", 349.90, LocalDate.of(2023, 5, 12));
-        Jogo portal2 = new Jogo(5, "Portal 2", 49.90, LocalDate.of(2011, 4, 19));
-        Jogo godOfWar = new Jogo(6, "God of War Ragnarök", 299.90, LocalDate.of(2022, 11, 9));
-        Jogo animalCrossing = new Jogo(7, "Animal Crossing: New Horizons", 249.90, LocalDate.of(2020, 3, 20));
-        Jogo hades = new Jogo(8, "Hades", 89.90, LocalDate.of(2020, 9, 17));
+        Jogo sky = new Jogo(1, "Sky: Children of the Light", 0.0, LocalDate.of(2019, 7, 18), "/images/sky1.jpg");
+        Jogo cs2 = new Jogo(2, "Counter-Strike 2", 0.0, LocalDate.of(2023, 9, 27), "/images/counter-strike-2-pc-mac-jogo-steam-cover.jpg");
+        Jogo eldenRing = new Jogo(3, "Elden Ring", 249.90, LocalDate.of(2022, 2, 25), "/images/eldenring.jpg");
+        Jogo zelda = new Jogo(4, "The Legend of Zelda: Tears of the Kingdom", 349.90, LocalDate.of(2023, 5, 12), "/images/zelda.jfif");
+        Jogo portal2 = new Jogo(5, "Portal 2", 49.90, LocalDate.of(2011, 4, 19), "/images/portal.jpg");
+        Jogo godOfWar = new Jogo(6, "God of War Ragnarök", 299.90, LocalDate.of(2022, 11, 9), "/images/godofwar.jpg");
+        Jogo animalCrossing = new Jogo(7, "Animal Crossing: New Horizons", 249.90, LocalDate.of(2020, 3, 20), "/images/animal-crossing.jfif");
+        Jogo hades = new Jogo(8, "Hades", 89.90, LocalDate.of(2020, 9, 17), "/images/hades.jpg");
 
         thatgamecompany.adicionarJogo(sky);
         valve.adicionarJogo(cs2);

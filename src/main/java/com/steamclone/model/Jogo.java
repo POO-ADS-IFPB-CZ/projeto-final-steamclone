@@ -22,12 +22,18 @@ public class Jogo implements Serializable {
     private final List<Acessorio> acessorios = new ArrayList<>();
     private final List<Complemento> complementos = new ArrayList<>();
     private final List<Avaliacao> avaliacoes = new ArrayList<>();
+    private String imagemCapa;
 
     public Jogo(int idJogo, String titulo, double preco, LocalDate dataLancamento) {
         this.idJogo = idJogo;
         this.titulo = titulo;
         this.preco = preco;
         this.dataLancamento = dataLancamento;
+    }
+
+    public Jogo(int idJogo, String titulo, double preco, LocalDate dataLancamento, String imagemCapa) {
+        this(idJogo, titulo, preco, dataLancamento);
+        this.imagemCapa = imagemCapa;
     }
 
     public int getIdJogo() {
@@ -44,6 +50,14 @@ public class Jogo implements Serializable {
 
     public void setTitulo(String titulo) {
         this.titulo = titulo;
+    }
+
+    public String getImagemCapa() {
+        return imagemCapa;
+    }
+
+    public void setImagemCapa(String imagemCapa) {
+        this.imagemCapa = imagemCapa;
     }
 
     public double getPreco() {

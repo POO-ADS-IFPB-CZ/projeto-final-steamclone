@@ -15,6 +15,8 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.control.SplitPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -185,9 +187,16 @@ public class BibliotecaView {
     }
 
     private VBox criarCardBiblioteca(Jogo jogo) {
-        StackPane capa = new StackPane(new Label("CAPA DO JOGO"));
+        StackPane capa = new StackPane();
         capa.getStyleClass().add("card-image-placeholder");
         capa.setPrefSize(300, 100);
+        String caminhoImagem = jogo.getImagemCapa() != null ? jogo.getImagemCapa() : "/images/capsule_616x353.jpg";
+        ImageView capaImage = criarImagemResource(caminhoImagem, 300, 100);
+        if (capaImage != null) {
+            capa.getChildren().add(capaImage);
+        } else {
+            capa.getChildren().add(new Label("CAPA DO JOGO"));
+        }
 
         Label nome = new Label(jogo.getTitulo());
         nome.getStyleClass().add("card-title");
@@ -227,7 +236,25 @@ public class BibliotecaView {
         card.setPrefWidth(320);
         return card;
     }
+    private ImageView criarImagemResource(String caminho, double largura, double altura) {
+        Image imagem = carregarImagem(caminho);
+        if (imagem == null) {
+            return null;
+        }
+        ImageView view = new ImageView(imagem);
+        view.setFitWidth(largura);
+        view.setFitHeight(altura);
+        view.setPreserveRatio(true);
+        view.setSmooth(true);
+        return view;
+    }
 
+    private Image carregarImagem(String caminho) {
+        if (getClass().getResource(caminho) == null) {
+            return null;
+        }
+        return new Image(getClass().getResource(caminho).toExternalForm(), false);
+    }
     private Label criarTag(String texto) {
         Label tag = new Label(texto);
         tag.getStyleClass().add("tag");
