@@ -13,19 +13,20 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
-import javafx.scene.control.TextField;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 public class BibliotecaView {
@@ -35,18 +36,19 @@ public class BibliotecaView {
     private final LojaRepository repository;
     private final String nickname;
     private final List<Jogo> jogosComprados;
+    private final List<Jogo> todosOsJogos;
 
-    private FlowPane cardsArea;
     private TextField pesquisaField;
     private ComboBox<String> categoriaCombo;
     private Label infoLabel;
-    private StackPane selectedCoverPane;
-    private ImageView selectedCoverView;
+    private VBox listaJogosBox;
+    private StackPane areaDestaque;
 
     public BibliotecaView(LojaRepository repository, String nickname) {
         this.repository = repository;
         this.nickname = nickname;
         this.jogosComprados = coletarJogosComprados();
+        this.todosOsJogos = new ArrayList<>(repository.getJogos());
     }
 
     public ScrollPane criarPainel() {
@@ -82,30 +84,34 @@ public class BibliotecaView {
 
     private SplitPane criarConteudo() {
         SplitPane split = new SplitPane(criarPainelLateral(), criarPainelPrincipal());
-        split.setDividerPositions(0.22);
+        split.setDividerPositions(0.25);
+        split.setPrefHeight(620);
+        split.setMinHeight(560);
+        VBox.setVgrow(split, Priority.ALWAYS);
         return split;
     }
 
     private VBox criarPainelLateral() {
         VBox lateral = new VBox(10);
         lateral.getStyleClass().add("sidebar");
-        lateral.setPrefWidth(240);
+        lateral.setPrefWidth(250);
 
         Label titulo = new Label("Página inicial");
         titulo.getStyleClass().add("sidebar-title");
 
-        Button btnLoja = criarBotaoLateral("Loja");
-        btnLoja.setOnAction(e -> {
+        Button btnTodos = criarBotaoLateral("Todos os jogos");
+        btnTodos.setOnAction(e -> {
             categoriaCombo.getSelectionModel().selectFirst();
             pesquisaField.clear();
-            atualizarCards(jogosComprados);
+            atualizarListaDeTitulos(jogosComprados);
         });
 
         Button btnFavoritos = criarBotaoLateral("Favoritos");
-        btnFavoritos.setOnAction(e -> atualizarCards(jogosComprados.stream().limit(4).collect(Collectors.toList())));
+        btnFavoritos.setOnAction(e -> atualizarListaDeTitulos(
+                jogosComprados.stream().limit(4).collect(Collectors.toList())));
 
         Button btnAtualizacoes = criarBotaoLateral("Atualizações");
-        btnAtualizacoes.setOnAction(e -> atualizarCards(jogosComprados.stream()
+        btnAtualizacoes.setOnAction(e -> atualizarListaDeTitulos(jogosComprados.stream()
                 .filter(j -> j.getPreco() <= 0.0 || j.getDataLancamento().getYear() >= 2023)
                 .collect(Collectors.toList())));
 
@@ -118,116 +124,166 @@ public class BibliotecaView {
         categoriaLabel.getStyleClass().add("sidebar-subtitle");
 
         categoriaCombo = new ComboBox<>();
-        categoriaCombo.getItems().addAll("Todos", "PC", "PlayStation 5", "Nintendo Switch");
+        categoriaCombo.getItems().addAll("Todos", "PC", "PlayStation 5", "Nintendo Switch", "Steam Deck");
         categoriaCombo.getSelectionModel().selectFirst();
         categoriaCombo.setMaxWidth(Double.MAX_VALUE);
         categoriaCombo.setOnAction(e -> filtrarBiblioteca());
 
-        VBox favoritosBox = new VBox(4);
-        favoritosBox.getChildren().add(criarSubtituloLateral("FAVORITOS"));
-        jogosComprados.stream().limit(4)
-                .forEach(jogo -> favoritosBox.getChildren().add(criarItemLateral(jogo.getTitulo())));
+        Label jogosLabel = criarSubtituloLateral("JOGOS DA BIBLIOTECA");
 
-        VBox todosBox = new VBox(4);
-        todosBox.getChildren().add(criarSubtituloLateral("TODOS OS JOGOS"));
-        repository.getJogos().stream().limit(6)
-                .forEach(jogo -> todosBox.getChildren().add(criarItemLateral(jogo.getTitulo())));
+        listaJogosBox = new VBox(4);
+        atualizarListaDeTitulos(jogosComprados);
+
+        ScrollPane listaScroll = new ScrollPane(listaJogosBox);
+        listaScroll.setFitToWidth(true);
+        listaScroll.setPrefViewportHeight(300);
+        listaScroll.getStyleClass().add("scroll-pane");
+        VBox.setVgrow(listaScroll, Priority.ALWAYS);
 
         lateral.getChildren().addAll(
-                titulo, btnLoja, btnFavoritos, btnAtualizacoes,
+                titulo, btnTodos, btnFavoritos, btnAtualizacoes,
                 new Separator(), pesquisaField, categoriaLabel, categoriaCombo,
-                new Separator(), favoritosBox, todosBox);
+                new Separator(), jogosLabel, listaScroll);
         return lateral;
     }
 
     private VBox criarPainelPrincipal() {
-        Label destaque = new Label("Sua coleção");
+        Label destaque = new Label("Jogo selecionado");
         destaque.getStyleClass().add("section-title");
 
-        Label subtitulo = new Label("Aqui estão os jogos que você já possui.");
+        Label subtitulo = new Label("Clique em um título da lista para trocar o jogo exibido.");
         subtitulo.getStyleClass().add("section-subtitle");
 
         VBox cabecalho = new VBox(4, destaque, subtitulo);
 
-        selectedCoverView = new ImageView();
-        selectedCoverView.setPreserveRatio(true);
-        selectedCoverView.setSmooth(true);
+        areaDestaque = new StackPane();
+        areaDestaque.getStyleClass().add("selected-cover-placeholder");
+        areaDestaque.setMinHeight(470);
+        areaDestaque.setPrefHeight(550);
+        areaDestaque.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+        areaDestaque.setPadding(Insets.EMPTY);
 
-        selectedCoverPane = new StackPane(criarLabelPlaceholder("Clique no título do jogo para ver a capa"));
-        selectedCoverPane.getStyleClass().add("selected-cover-placeholder");
-        selectedCoverPane.setPrefHeight(380);
-        selectedCoverPane.setMaxWidth(Double.MAX_VALUE);
-        selectedCoverPane.setMaxHeight(Double.MAX_VALUE);
-        selectedCoverPane.setPadding(new Insets(20));
-        StackPane.setAlignment(selectedCoverView, Pos.CENTER);
-        selectedCoverView.fitWidthProperty().bind(selectedCoverPane.widthProperty());
-        selectedCoverView.fitHeightProperty().bind(selectedCoverPane.heightProperty());
+        if (jogosComprados.isEmpty()) {
+            areaDestaque.getChildren().setAll(criarLabelPlaceholder("Nenhum jogo na biblioteca."));
+        } else {
+            Jogo primeiroJogo = jogosComprados.get(0);
+            mostrarCardDoJogo(primeiroJogo);
+        }
 
-        VBox principal = new VBox(14, cabecalho, selectedCoverPane);
-        principal.setPadding(new Insets(0, 0, 0, 16));
-        VBox.setVgrow(selectedCoverPane, Priority.ALWAYS);
+        VBox principal = new VBox(10, cabecalho, areaDestaque);
+        principal.getStyleClass().add("library-main");
+        principal.setPadding(new Insets(0));
+        principal.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+        VBox.setVgrow(areaDestaque, Priority.ALWAYS);
         return principal;
     }
 
-    private void atualizarCards(List<Jogo> jogos) {
-        cardsArea.getChildren().clear();
+    private void atualizarListaDeTitulos(List<Jogo> jogos) {
+        listaJogosBox.getChildren().clear();
+
         if (jogos.isEmpty()) {
             Label vazio = new Label("Nenhum jogo corresponde à busca.");
             vazio.getStyleClass().add("empty-label");
-            cardsArea.getChildren().add(vazio);
+            vazio.setWrapText(true);
+            listaJogosBox.getChildren().add(vazio);
         } else {
-            for (Jogo jogo : jogos) {
-                cardsArea.getChildren().add(criarCardBiblioteca(jogo));
-            }
+            jogos.forEach(jogo -> listaJogosBox.getChildren().add(criarItemLateral(jogo)));
         }
-        infoLabel.setText(jogos.size() + " jogo(s) na biblioteca");
+
+        infoLabel.setText(jogos.size() + " jogo(s) exibido(s) • " + jogosComprados.size() + " comprado(s)");
     }
 
     private void filtrarBiblioteca() {
         String termo = pesquisaField.getText() == null ? "" : pesquisaField.getText().trim().toLowerCase();
         String categoria = categoriaCombo.getValue() != null ? categoriaCombo.getValue() : "Todos";
-        List<Jogo> filtrados = jogosComprados.stream()
+
+        List<Jogo> filtrados = todosOsJogos.stream()
                 .filter(jogo -> termo.isBlank()
                         || jogo.getTitulo().toLowerCase().contains(termo)
-                        || (jogo.getDesenvolvedora() != null && jogo.getDesenvolvedora().getNome().toLowerCase().contains(termo))
-                        || jogo.getPlataformas().stream().anyMatch(p -> p.getNome().toLowerCase().contains(termo)))
+                        || (jogo.getDesenvolvedora() != null
+                        && jogo.getDesenvolvedora().getNome().toLowerCase().contains(termo))
+                        || jogo.getPlataformas().stream()
+                        .anyMatch(p -> p.getNome().toLowerCase().contains(termo)))
                 .filter(jogo -> categoria.equals("Todos")
-                        || jogo.getPlataformas().stream().anyMatch(p -> p.getNome().equalsIgnoreCase(categoria)))
+                        || jogo.getPlataformas().stream()
+                        .anyMatch(p -> p.getNome().equalsIgnoreCase(categoria)))
                 .collect(Collectors.toList());
-        atualizarCards(filtrados);
+
+        atualizarListaDeTitulos(filtrados);
     }
 
-    private VBox criarCardBiblioteca(Jogo jogo) {
+    private void mostrarCardDoJogo(Jogo jogo) {
+        VBox card = criarCardDestaque(jogo);
+        card.prefWidthProperty().bind(areaDestaque.widthProperty());
+        card.prefHeightProperty().bind(areaDestaque.heightProperty());
+        StackPane.setAlignment(card, Pos.CENTER);
+        areaDestaque.getChildren().setAll(card);
+    }
+
+    private VBox criarCardDestaque(Jogo jogo) {
+        String caminhoImagem = jogo.getImagemCapa() != null ? jogo.getImagemCapa() : CAPA_PADRAO;
+        Image imagem = carregarImagem(caminhoImagem);
+
         StackPane capa = new StackPane();
         capa.getStyleClass().add("card-image-placeholder");
-        capa.setPrefSize(300, 100);
-        String caminhoImagem = jogo.getImagemCapa() != null ? jogo.getImagemCapa() : CAPA_PADRAO;
-        ImageView capaImage = criarImagemResource(caminhoImagem, 300, 100);
-        if (capaImage != null) {
-            capa.getChildren().add(capaImage);
+        capa.setMinHeight(300);
+        capa.setPrefHeight(390);
+        capa.setMaxHeight(Double.MAX_VALUE);
+        capa.setMaxWidth(Double.MAX_VALUE);
+
+        if (imagem != null) {
+            ImageView imageView = new ImageView(imagem);
+            imageView.setPreserveRatio(true);
+            imageView.setSmooth(true);
+            imageView.fitWidthProperty().bind(capa.widthProperty().subtract(8));
+            imageView.fitHeightProperty().bind(capa.heightProperty().subtract(8));
+            capa.getChildren().add(imageView);
         } else {
-            capa.getChildren().add(new Label("CAPA DO JOGO"));
+            capa.getChildren().add(criarLabelPlaceholder("Imagem não disponível"));
         }
 
         Label nome = new Label(jogo.getTitulo());
         nome.getStyleClass().add("card-title");
+        nome.setStyle("-fx-font-size: 22px; -fx-font-weight: bold;");
         nome.setWrapText(true);
-        nome.setStyle("-fx-cursor: hand;");
 
-        Label info = new Label(jogo.getPlataformas().isEmpty() ? "" : jogo.getPlataformas().get(0).getNome());
-        info.getStyleClass().add("card-subtitle");
+        String desenvolvedora = jogo.getDesenvolvedora() != null
+                ? jogo.getDesenvolvedora().getNome()
+                : "Desenvolvedora desconhecida";
 
-        Label descricao = new Label(jogo.getDesenvolvedora() != null ? jogo.getDesenvolvedora().getNome() : "Desenvolvedora desconhecida");
-        descricao.getStyleClass().add("card-subtitle");
+        Label empresa = new Label("Desenvolvedora: " + desenvolvedora);
+        empresa.getStyleClass().add("card-subtitle");
+
+        String plataformas = jogo.getPlataformas().isEmpty()
+                ? "Não informada"
+                : jogo.getPlataformas().stream()
+                .map(p -> p.getNome())
+                .collect(Collectors.joining(", "));
+
+        Label plataforma = new Label("Plataformas: " + plataformas);
+        plataforma.getStyleClass().add("card-subtitle");
+        plataforma.setWrapText(true);
+
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        Label lancamento = new Label("Lançamento: " + jogo.getDataLancamento().format(formato));
+        lancamento.getStyleClass().add("card-subtitle");
+
+        Label avaliacao = new Label(jogo.getAvaliacoes().isEmpty()
+                ? "Avaliação: ainda sem avaliações"
+                : String.format("Avaliação média: %.1f/10", jogo.getMediaNotas()));
+        avaliacao.getStyleClass().add("card-subtitle");
 
         HBox tags = new HBox(6);
-        tags.getChildren().add(criarTag("Biblioteca"));
+        tags.getChildren().add(criarTag("Na biblioteca"));
         if (jogo.getPreco() <= 0.0) {
             tags.getChildren().add(criarTag("Grátis"));
         }
 
-        Label preco = new Label(jogo.getPreco() <= 0.0 ? "Grátis" : String.format("R$ %.2f", jogo.getPreco()));
+        Label preco = new Label(jogo.getPreco() <= 0.0
+                ? "Grátis"
+                : String.format("R$ %.2f", jogo.getPreco()));
         preco.getStyleClass().add("price-tag");
+        preco.setStyle("-fx-font-size: 16px;");
 
         Button jogar = new Button("Jogar");
         jogar.getStyleClass().add("btn-primary");
@@ -240,46 +296,25 @@ public class BibliotecaView {
 
         Region espacador = new Region();
         HBox.setHgrow(espacador, Priority.ALWAYS);
-        HBox rodape = new HBox(preco, espacador, jogar);
+        HBox rodape = new HBox(12, preco, espacador, jogar);
         rodape.setAlignment(Pos.CENTER_LEFT);
 
-        VBox card = new VBox(8, capa, nome, info, descricao, tags, rodape);
+        VBox informacoes = new VBox(7, nome, empresa, plataforma, lancamento, avaliacao, tags, rodape);
+        VBox card = new VBox(10, capa, informacoes);
         card.getStyleClass().add("game-card");
-        card.setPrefWidth(320);
-        card.setOnMouseClicked(e -> mostrarCapaDoJogo(jogo));
+        card.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+        VBox.setVgrow(capa, Priority.ALWAYS);
         return card;
-    }
-    private ImageView criarImagemResource(String caminho, double largura, double altura) {
-        Image imagem = carregarImagem(caminho);
-        if (imagem == null) {
-            return null;
-        }
-        ImageView view = new ImageView(imagem);
-        view.setFitWidth(largura);
-        view.setFitHeight(altura);
-        view.setPreserveRatio(true);
-        view.setSmooth(true);
-        return view;
-    }
-
-    private void mostrarCapaDoJogo(Jogo jogo) {
-        selectedCoverPane.getChildren().clear();
-        String caminhoImagem = jogo.getImagemCapa() != null ? jogo.getImagemCapa() : CAPA_PADRAO;
-        Image image = carregarImagem(caminhoImagem);
-        if (image != null) {
-            selectedCoverView.setImage(image);
-            selectedCoverPane.getChildren().setAll(selectedCoverView);
-        } else {
-            selectedCoverPane.getChildren().setAll(criarLabelPlaceholder("Imagem não disponível"));
-        }
     }
 
     private Image carregarImagem(String caminho) {
-        if (getClass().getResource(caminho) == null) {
+        var resource = getClass().getResource(caminho);
+        if (resource == null) {
             return null;
         }
-        return new Image(getClass().getResource(caminho).toExternalForm(), false);
+        return new Image(resource.toExternalForm(), false);
     }
+
     private Label criarTag(String texto) {
         Label tag = new Label(texto);
         tag.getStyleClass().add("tag");
@@ -289,12 +324,14 @@ public class BibliotecaView {
     private Label criarLabelPlaceholder(String texto) {
         Label label = new Label(texto);
         label.getStyleClass().add("banner-image-text");
+        label.setWrapText(true);
         return label;
     }
 
     private List<Jogo> coletarJogosComprados() {
         var clienteOpt = repository.buscarClientePorNickname(nickname);
         List<Jogo> jogosComprados = new ArrayList<>();
+
         if (clienteOpt.isPresent()) {
             for (Pedido pedido : clienteOpt.get().getPedidos()) {
                 if (pedido.getStatus() == StatusPedido.FINALIZADO) {
@@ -317,9 +354,12 @@ public class BibliotecaView {
         return botao;
     }
 
-    private Label criarItemLateral(String texto) {
-        Label item = new Label(texto);
+    private Label criarItemLateral(Jogo jogo) {
+        Label item = new Label(jogo.getTitulo());
         item.getStyleClass().add("sidebar-item");
+        item.setWrapText(true);
+        item.setMaxWidth(Double.MAX_VALUE);
+        item.setOnMouseClicked(e -> mostrarCardDoJogo(jogo));
         return item;
     }
 

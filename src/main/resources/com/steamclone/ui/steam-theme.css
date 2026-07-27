@@ -270,3 +270,26 @@
     -fx-text-fill: #8f98a0;
     -fx-font-size: 13px;
 }
+
+/* Biblioteca: elimina o fundo branco padrão do SplitPane e faz o destaque ocupar a área direita. */
+.split-pane,
+.split-pane > .split-pane-divider,
+.library-main,
+.selected-cover-placeholder {
+    -fx-background-color: #171a21;
+}
+
+.library-main {
+    -fx-padding: 0;
+}
+
+.selected-cover-placeholder {
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+
+.library-main .game-card {
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    -fx-padding: 12;
+}
