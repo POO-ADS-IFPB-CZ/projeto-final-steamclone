@@ -3,12 +3,15 @@ package com.steamclone.model;
 import com.steamclone.model.enums.MetodoPagamento;
 import com.steamclone.model.enums.StatusPagamento;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 /**
  * Informações financeiras da transação associada ao pedido.
  */
-public class Pagamento {
+public class Pagamento implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private int idPagamento;
     private MetodoPagamento metodo;

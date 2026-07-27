@@ -1,9 +1,13 @@
 package com.steamclone.model;
 
+import java.io.Serializable;
+
 /**
  * Item de um pedido: associa um jogo à compra.
  */
-public class ItemPedido {
+public class ItemPedido implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private Jogo jogo;
     private int quantidade;

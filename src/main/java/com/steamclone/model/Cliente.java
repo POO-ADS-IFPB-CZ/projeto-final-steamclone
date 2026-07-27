@@ -1,5 +1,6 @@
 package com.steamclone.model;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,7 +9,9 @@ import java.util.List;
 /**
  * Pessoa que consome jogos e produtos da loja online.
  */
-public class Cliente extends Pessoa {
+public class Cliente extends Pessoa implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private String nickname;
     private LocalDate dataCadastro;

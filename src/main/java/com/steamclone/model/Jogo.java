@@ -1,5 +1,6 @@
 package com.steamclone.model;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,7 +9,9 @@ import java.util.List;
 /**
  * Produto digital à venda na loja.
  */
-public class Jogo {
+public class Jogo implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private int idJogo;
     private String titulo;

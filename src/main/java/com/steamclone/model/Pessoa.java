@@ -1,12 +1,15 @@
 package com.steamclone.model;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
 
 /**
  * Entidade base da hierarquia de indivíduos do sistema.
  */
-public abstract class Pessoa {
+public abstract class Pessoa implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private String nome;
     private String cpf;

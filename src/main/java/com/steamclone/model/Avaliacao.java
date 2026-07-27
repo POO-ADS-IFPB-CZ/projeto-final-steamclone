@@ -1,11 +1,14 @@
 package com.steamclone.model;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 /**
  * Avaliação de um jogo feita por um cliente.
  */
-public class Avaliacao {
+public class Avaliacao implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private Cliente cliente;
     private Jogo jogo;

@@ -2,6 +2,7 @@ package com.steamclone.model;
 
 import com.steamclone.model.enums.StatusPedido;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,7 +11,9 @@ import java.util.List;
 /**
  * Transação de compra de jogos realizada pelo cliente.
  */
-public class Pedido {
+public class Pedido implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private int idPedido;
     private LocalDate dataPedido;

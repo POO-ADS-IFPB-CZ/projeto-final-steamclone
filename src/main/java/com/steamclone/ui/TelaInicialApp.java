@@ -1,9 +1,9 @@
 package com.steamclone.ui;
 
-import com.steamclone.data.DadosExemplo;
 import com.steamclone.model.Jogo;
 import com.steamclone.repository.LojaRepository;
 import com.steamclone.service.ConsultaService;
+import com.steamclone.ui.GerenciamentoView;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -54,8 +54,7 @@ public class TelaInicialApp extends Application {
     private Button wishlistButton;
 
     public TelaInicialApp() {
-        this.repository = new LojaRepository();
-        DadosExemplo.carregar(repository);
+        this.repository = LojaRepository.carregar();
         this.consultaService = new ConsultaService(repository);
     }
 
@@ -89,11 +88,13 @@ public class TelaInicialApp extends Application {
         lojaBtn.setOnAction(e -> mostrarLoja());
         Button bibliotecaBtn = criarBotaoNav("BIBLIOTECA");
         bibliotecaBtn.setOnAction(e -> exibirBiblioteca());
+        Button gerenciarBtn = criarBotaoNav("GERENCIAR");
+        gerenciarBtn.setOnAction(e -> exibirGerenciamento());
         Button comunidadeBtn = criarBotaoNav("COMUNIDADE");
         Button jogosBtn = criarBotaoNav("JOGOS");
         Button ajudaBtn = criarBotaoNav("AJUDA");
 
-        HBox navEsquerda = new HBox(4, logo, espaco(18), lojaBtn, bibliotecaBtn, comunidadeBtn, jogosBtn, ajudaBtn);
+        HBox navEsquerda = new HBox(4, logo, espaco(18), lojaBtn, bibliotecaBtn, gerenciarBtn, comunidadeBtn, jogosBtn, ajudaBtn);
         navEsquerda.setAlignment(Pos.CENTER_LEFT);
 
         Region espacador = new Region();
@@ -379,10 +380,30 @@ public class TelaInicialApp extends Application {
         bibliotecaAtiva = false;
     }
 
+    private void exibirGerenciamento() {
+        GerenciamentoView gerenciamento = new GerenciamentoView(repository, this::salvarDados);
+        rootLayout.setCenter(gerenciamento.criarPainel());
+        bibliotecaAtiva = false;
+    }
+
     private void exibirBiblioteca() {
         BibliotecaView biblioteca = new BibliotecaView(repository, currentNickname);
         rootLayout.setCenter(biblioteca.criarPainel());
         bibliotecaAtiva = true;
+    }
+
+    private void salvarDados() {
+        if (repository.salvar()) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Dados salvos com sucesso.");
+            alert.setTitle("Salvar");
+            alert.setHeaderText(null);
+            alert.showAndWait();
+        } else {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Não foi possível salvar os dados.");
+            alert.setTitle("Erro");
+            alert.setHeaderText(null);
+            alert.showAndWait();
+        }
     }
 
     private void exibirDetalhesJogo(Jogo jogo) {

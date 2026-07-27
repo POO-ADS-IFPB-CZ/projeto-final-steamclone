@@ -1,11 +1,14 @@
 package com.steamclone.model;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 /**
  * Especialização de Pessoa com informações de vínculo laboral.
  */
-public class Desenvolvedor extends Pessoa {
+public class Desenvolvedor extends Pessoa implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private String matricula;
     private String cargo;

@@ -1,5 +1,6 @@
 package com.steamclone.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -7,7 +8,9 @@ import java.util.List;
 /**
  * Estúdio criador de jogos e fabricante de plataformas.
  */
-public class Desenvolvedora {
+public class Desenvolvedora implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private String cnpj;
     private String nome;

@@ -1,5 +1,6 @@
 package com.steamclone.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -7,7 +8,9 @@ import java.util.List;
 /**
  * Acessório físico ou digital associado a jogos.
  */
-public class Acessorio {
+public class Acessorio implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private int idAcessorio;
     private String plataforma;

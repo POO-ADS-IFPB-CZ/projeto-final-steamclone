@@ -1,5 +1,6 @@
 package com.steamclone.model;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,7 +9,9 @@ import java.util.List;
 /**
  * Sistema ou console onde o jogo roda.
  */
-public class Plataforma {
+public class Plataforma implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private int idPlataforma;
     private String nome;

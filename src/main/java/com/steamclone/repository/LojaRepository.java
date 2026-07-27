@@ -1,7 +1,18 @@
 package com.steamclone.repository;
 
+import com.steamclone.data.DadosExemplo;
 import com.steamclone.model.*;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -10,7 +21,10 @@ import java.util.Optional;
 /**
  * Repositório em memória para persistência dos dados da loja.
  */
-public class LojaRepository {
+public class LojaRepository implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+    private static final Path STORAGE_PATH = Paths.get("store-data.bin");
 
     private final List<Cliente> clientes = new ArrayList<>();
     private final List<Desenvolvedor> desenvolvedores = new ArrayList<>();
@@ -27,16 +41,32 @@ public class LojaRepository {
         clientes.add(cliente);
     }
 
+    public boolean removerCliente(Cliente cliente) {
+        return clientes.remove(cliente);
+    }
+
     public void adicionarDesenvolvedor(Desenvolvedor desenvolvedor) {
         desenvolvedores.add(desenvolvedor);
+    }
+
+    public boolean removerDesenvolvedor(Desenvolvedor desenvolvedor) {
+        return desenvolvedores.remove(desenvolvedor);
     }
 
     public void adicionarDesenvolvedora(Desenvolvedora desenvolvedora) {
         desenvolvedoras.add(desenvolvedora);
     }
 
+    public boolean removerDesenvolvedora(Desenvolvedora desenvolvedora) {
+        return desenvolvedoras.remove(desenvolvedora);
+    }
+
     public void adicionarJogo(Jogo jogo) {
         jogos.add(jogo);
+    }
+
+    public boolean removerJogo(Jogo jogo) {
+        return jogos.remove(jogo);
     }
 
     public void adicionarPlataforma(Plataforma plataforma) {
@@ -51,8 +81,16 @@ public class LojaRepository {
         pedidos.add(pedido);
     }
 
+    public boolean removerPedido(Pedido pedido) {
+        return pedidos.remove(pedido);
+    }
+
     public void adicionarPagamento(Pagamento pagamento) {
         pagamentos.add(pagamento);
+    }
+
+    public boolean removerPagamento(Pagamento pagamento) {
+        return pagamentos.remove(pagamento);
     }
 
     public void adicionarComplemento(Complemento complemento) {
@@ -61,6 +99,76 @@ public class LojaRepository {
 
     public void adicionarAvaliacao(Avaliacao avaliacao) {
         avaliacoes.add(avaliacao);
+    }
+
+    public boolean atualizarCliente(Cliente cliente) {
+        return buscarClientePorCpf(cliente.getCpf())
+                .map(existing -> {
+                    existing.setNome(cliente.getNome());
+                    existing.setEmail(cliente.getEmail());
+                    existing.setDataNascimento(cliente.getDataNascimento());
+                    existing.setNickname(cliente.getNickname());
+                    existing.setDataCadastro(cliente.getDataCadastro());
+                    return true;
+                })
+                .orElse(false);
+    }
+
+    public boolean atualizarJogo(Jogo jogo) {
+        return buscarJogoPorTitulo(jogo.getTitulo())
+                .map(existing -> {
+                    existing.setPreco(jogo.getPreco());
+                    existing.setDataLancamento(jogo.getDataLancamento());
+                    return true;
+                })
+                .orElse(false);
+    }
+
+    public boolean atualizarPedido(Pedido pedido) {
+        return buscarPedidoPorId(pedido.getIdPedido())
+                .map(existing -> {
+                    existing.setStatus(pedido.getStatus());
+                    existing.setPagamento(pedido.getPagamento());
+                    return true;
+                })
+                .orElse(false);
+    }
+
+    public boolean atualizarPagamento(Pagamento pagamento) {
+        for (int i = 0; i < pagamentos.size(); i++) {
+            if (pagamentos.get(i).getIdPagamento() == pagamento.getIdPagamento()) {
+                pagamentos.set(i, pagamento);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean salvar() {
+        try {
+            Files.createDirectories(STORAGE_PATH.getParent() == null ? Paths.get(".") : STORAGE_PATH.getParent());
+            try (ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(Files.newOutputStream(STORAGE_PATH)))) {
+                out.writeObject(this);
+            }
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static LojaRepository carregar() {
+        if (Files.exists(STORAGE_PATH)) {
+            try (ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(Files.newInputStream(STORAGE_PATH)))) {
+                return (LojaRepository) in.readObject();
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        LojaRepository repo = new LojaRepository();
+        DadosExemplo.carregar(repo);
+        repo.salvar();
+        return repo;
     }
 
     public List<Cliente> getClientes() {
