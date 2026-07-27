@@ -397,7 +397,7 @@ public class TelaInicialApp extends Application {
     }
 
     private void exibirGerenciamento() {
-        GerenciamentoView gerenciamento = new GerenciamentoView(repository, this::salvarDados);
+        GerenciamentoView gerenciamento = new GerenciamentoView(repository, v -> salvarDados());
         rootLayout.setCenter(gerenciamento.criarPainel());
         bibliotecaAtiva = false;
     }

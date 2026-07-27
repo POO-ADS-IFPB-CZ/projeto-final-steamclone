@@ -133,10 +133,13 @@ public class DadosExemplo {
                 LocalDate.of(1998, 8, 22), "mariaplays", LocalDate.of(2024, 3, 20));
         Cliente cliente3 = new Cliente("Lucas Ferreira", "777.888.999-00", "lucas@email.com",
                 LocalDate.of(2000, 12, 5), "lucasfps", LocalDate.of(2025, 6, 1));
+        Cliente cliente4 = new Cliente("Tsuki Yamada", "888.999.000-11", "tsuki@email.com",
+                LocalDate.of(2001, 3, 14), "TSUKI_11", LocalDate.of(2025, 7, 1));
 
         repo.adicionarCliente(cliente1);
         repo.adicionarCliente(cliente2);
         repo.adicionarCliente(cliente3);
+        repo.adicionarCliente(cliente4);
 
         // Pedidos e Pagamentos
         Pedido pedido1 = new Pedido(1001, LocalDate.of(2025, 7, 10), StatusPedido.FINALIZADO);
@@ -171,6 +174,14 @@ public class DadosExemplo {
         cliente1.adicionarPedido(pedido4);
         repo.adicionarPedido(pedido4);
         repo.adicionarPagamento(pag4);
+
+        Pedido pedido5 = new Pedido(1005, LocalDate.of(2025, 7, 24), StatusPedido.FINALIZADO);
+        pedido5.adicionarItem(godOfWar, 1);
+        Pagamento pag5 = new Pagamento(5005, MetodoPagamento.CARTAO, StatusPagamento.PAGO, LocalDate.of(2025, 7, 24));
+        pedido5.setPagamento(pag5);
+        cliente4.adicionarPedido(pedido5);
+        repo.adicionarPedido(pedido5);
+        repo.adicionarPagamento(pag5);
 
         // Avaliações
         repo.adicionarAvaliacao(new Avaliacao(cliente1, sky, 10, LocalDate.of(2025, 7, 12), "Obra de arte!"));

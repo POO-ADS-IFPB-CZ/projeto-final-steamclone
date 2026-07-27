@@ -30,6 +30,8 @@ import java.util.stream.Collectors;
 
 public class BibliotecaView {
 
+    private static final String CAPA_PADRAO = "/images/sky1.jpg";
+
     private final LojaRepository repository;
     private final String nickname;
     private final List<Jogo> jogosComprados;
@@ -38,6 +40,8 @@ public class BibliotecaView {
     private TextField pesquisaField;
     private ComboBox<String> categoriaCombo;
     private Label infoLabel;
+    private StackPane selectedCoverPane;
+    private ImageView selectedCoverView;
 
     public BibliotecaView(LojaRepository repository, String nickname) {
         this.repository = repository;
@@ -145,16 +149,23 @@ public class BibliotecaView {
 
         VBox cabecalho = new VBox(4, destaque, subtitulo);
 
-        cardsArea = new FlowPane(16, 16);
-        atualizarCards(jogosComprados);
+        selectedCoverView = new ImageView();
+        selectedCoverView.setPreserveRatio(true);
+        selectedCoverView.setSmooth(true);
 
-        ScrollPane scroll = new ScrollPane(cardsArea);
-        scroll.setFitToWidth(true);
-        scroll.getStyleClass().add("scroll-pane");
-        VBox.setVgrow(scroll, Priority.ALWAYS);
+        selectedCoverPane = new StackPane(criarLabelPlaceholder("Clique no título do jogo para ver a capa"));
+        selectedCoverPane.getStyleClass().add("selected-cover-placeholder");
+        selectedCoverPane.setPrefHeight(380);
+        selectedCoverPane.setMaxWidth(Double.MAX_VALUE);
+        selectedCoverPane.setMaxHeight(Double.MAX_VALUE);
+        selectedCoverPane.setPadding(new Insets(20));
+        StackPane.setAlignment(selectedCoverView, Pos.CENTER);
+        selectedCoverView.fitWidthProperty().bind(selectedCoverPane.widthProperty());
+        selectedCoverView.fitHeightProperty().bind(selectedCoverPane.heightProperty());
 
-        VBox principal = new VBox(14, cabecalho, scroll);
+        VBox principal = new VBox(14, cabecalho, selectedCoverPane);
         principal.setPadding(new Insets(0, 0, 0, 16));
+        VBox.setVgrow(selectedCoverPane, Priority.ALWAYS);
         return principal;
     }
 
@@ -190,7 +201,7 @@ public class BibliotecaView {
         StackPane capa = new StackPane();
         capa.getStyleClass().add("card-image-placeholder");
         capa.setPrefSize(300, 100);
-        String caminhoImagem = jogo.getImagemCapa() != null ? jogo.getImagemCapa() : "/images/capsule_616x353.jpg";
+        String caminhoImagem = jogo.getImagemCapa() != null ? jogo.getImagemCapa() : CAPA_PADRAO;
         ImageView capaImage = criarImagemResource(caminhoImagem, 300, 100);
         if (capaImage != null) {
             capa.getChildren().add(capaImage);
@@ -201,6 +212,7 @@ public class BibliotecaView {
         Label nome = new Label(jogo.getTitulo());
         nome.getStyleClass().add("card-title");
         nome.setWrapText(true);
+        nome.setStyle("-fx-cursor: hand;");
 
         Label info = new Label(jogo.getPlataformas().isEmpty() ? "" : jogo.getPlataformas().get(0).getNome());
         info.getStyleClass().add("card-subtitle");
@@ -234,6 +246,7 @@ public class BibliotecaView {
         VBox card = new VBox(8, capa, nome, info, descricao, tags, rodape);
         card.getStyleClass().add("game-card");
         card.setPrefWidth(320);
+        card.setOnMouseClicked(e -> mostrarCapaDoJogo(jogo));
         return card;
     }
     private ImageView criarImagemResource(String caminho, double largura, double altura) {
@@ -249,6 +262,18 @@ public class BibliotecaView {
         return view;
     }
 
+    private void mostrarCapaDoJogo(Jogo jogo) {
+        selectedCoverPane.getChildren().clear();
+        String caminhoImagem = jogo.getImagemCapa() != null ? jogo.getImagemCapa() : CAPA_PADRAO;
+        Image image = carregarImagem(caminhoImagem);
+        if (image != null) {
+            selectedCoverView.setImage(image);
+            selectedCoverPane.getChildren().setAll(selectedCoverView);
+        } else {
+            selectedCoverPane.getChildren().setAll(criarLabelPlaceholder("Imagem não disponível"));
+        }
+    }
+
     private Image carregarImagem(String caminho) {
         if (getClass().getResource(caminho) == null) {
             return null;
@@ -259,6 +284,12 @@ public class BibliotecaView {
         Label tag = new Label(texto);
         tag.getStyleClass().add("tag");
         return tag;
+    }
+
+    private Label criarLabelPlaceholder(String texto) {
+        Label label = new Label(texto);
+        label.getStyleClass().add("banner-image-text");
+        return label;
     }
 
     private List<Jogo> coletarJogosComprados() {
