@@ -76,13 +76,18 @@ src/main/java/com/steamclone/
 # Compilar
 mvn compile
 
-# Executar
+# 1) Menu de consultas em modo texto (Main.java)
 mvn exec:java
 
-# Ou gerar JAR e executar
+# 2) Loja gráfica em JavaFX (TelaInicialApp.java + BibliotecaView.java)
+mvn javafx:run
+
+# Ou gerar o JAR e executar a loja gráfica diretamente
 mvn package
 java -jar target/projeto-final-steamclone-1.0-SNAPSHOT.jar
 ```
+
+> ⚠️ Na primeira execução, o Maven baixa os módulos do JavaFX do Maven Central. É necessário estar conectado à internet nesse primeiro `mvn compile`/`mvn package`.
 
 ## Dados de Exemplo
 

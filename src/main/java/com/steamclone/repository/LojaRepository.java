@@ -111,6 +111,12 @@ public class LojaRepository {
                 .findFirst();
     }
 
+    public Optional<Cliente> buscarClientePorNickname(String nickname) {
+        return clientes.stream()
+                .filter(c -> c.getNickname() != null && c.getNickname().equalsIgnoreCase(nickname))
+                .findFirst();
+    }
+
     public Optional<Jogo> buscarJogoPorTitulo(String titulo) {
         return jogos.stream()
                 .filter(j -> j.getTitulo().equalsIgnoreCase(titulo))
