@@ -1,0 +1,295 @@
+/*
+ * Tema visual inspirado na Steam para o front-end JavaFX.
+ */
+.root {
+    -fx-background-color: #171a21;
+    -fx-font-family: "Segoe UI", "Arial", sans-serif;
+    -fx-text-fill: #c6d4df;
+}
+
+.top-bar {
+    -fx-background-color: #171a21;
+    -fx-padding: 10 18 10 18;
+    -fx-border-color: transparent transparent #000000 transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.logo-text {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+.nav-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #b8bcbf;
+    -fx-font-size: 13px;
+    -fx-padding: 8 10 8 10;
+    -fx-cursor: hand;
+}
+
+.nav-button:hover {
+    -fx-text-fill: #ffffff;
+}
+
+.search-field {
+    -fx-background-color: #316282;
+    -fx-text-fill: #ffffff;
+    -fx-prompt-text-fill: #c3d8e6;
+    -fx-background-radius: 2;
+    -fx-padding: 7 10 7 10;
+    -fx-font-size: 12px;
+}
+
+.top-icon-button {
+    -fx-background-color: #2a3f5a;
+    -fx-text-fill: #d2e3f2;
+    -fx-background-radius: 2;
+    -fx-padding: 7 12 7 12;
+    -fx-font-size: 12px;
+    -fx-cursor: hand;
+}
+
+.top-icon-button:hover {
+    -fx-background-color: #3a5978;
+}
+
+.user-label {
+    -fx-text-fill: #66c0f4;
+    -fx-font-size: 13px;
+    -fx-cursor: hand;
+    -fx-padding: 7 4 7 4;
+}
+
+.user-label:hover {
+    -fx-text-fill: #9ad2f0;
+    -fx-underline: true;
+}
+
+.banner {
+    -fx-background-color: linear-gradient(to right, #1e2a3d, #16232f);
+    -fx-padding: 26;
+    -fx-background-radius: 3;
+    -fx-border-color: #2a475e;
+    -fx-border-width: 1;
+    -fx-border-radius: 3;
+}
+
+.banner-title {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 30px;
+    -fx-font-weight: bold;
+}
+
+.banner-subtitle {
+    -fx-text-fill: #bfe1f6;
+    -fx-font-size: 15px;
+}
+
+.banner-date {
+    -fx-text-fill: #8f98a0;
+    -fx-font-size: 13px;
+}
+
+.banner-image-placeholder {
+    -fx-background-color: #22344a;
+    -fx-border-color: #46688f;
+    -fx-border-width: 2;
+    -fx-alignment: center;
+}
+
+.banner-image-text {
+    -fx-text-fill: #c8ddf2;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.btn-primary {
+    -fx-background-color: #66c0f4;
+    -fx-text-fill: #0e1b26;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-background-radius: 2;
+    -fx-padding: 9 20 9 20;
+    -fx-cursor: hand;
+}
+
+.btn-primary:hover {
+    -fx-background-color: #8fd3ff;
+}
+
+.btn-secondary {
+    -fx-background-color: #2a3f5a;
+    -fx-text-fill: #d2e3f2;
+    -fx-font-size: 12px;
+    -fx-background-radius: 2;
+    -fx-padding: 7 14 7 14;
+    -fx-cursor: hand;
+}
+
+.btn-secondary:hover {
+    -fx-background-color: #3a5978;
+}
+
+.btn-success {
+    -fx-background-color: #4c6b22;
+    -fx-text-fill: #d5f2a3;
+    -fx-font-size: 12px;
+    -fx-background-radius: 2;
+    -fx-padding: 7 14 7 14;
+    -fx-cursor: hand;
+}
+
+.btn-success:hover {
+    -fx-background-color: #628a2c;
+}
+
+.section-title {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+.section-subtitle {
+    -fx-text-fill: #8f98a0;
+    -fx-font-size: 12px;
+}
+
+.result-label {
+    -fx-text-fill: #8f98a0;
+    -fx-font-size: 12px;
+}
+
+.game-card {
+    -fx-background-color: #1e2a38;
+    -fx-border-color: #2a475e;
+    -fx-border-width: 1;
+    -fx-background-radius: 3;
+    -fx-border-radius: 3;
+    -fx-padding: 12;
+    -fx-cursor: hand;
+}
+
+.game-card:hover {
+    -fx-border-color: #66c0f4;
+    -fx-background-color: #24344a;
+}
+
+.card-image-placeholder {
+    -fx-background-color: #22344a;
+    -fx-border-color: #46688f;
+    -fx-border-width: 1;
+    -fx-alignment: center;
+}
+
+.card-title {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.card-subtitle {
+    -fx-text-fill: #b8bcbf;
+    -fx-font-size: 12px;
+}
+
+.price-tag {
+    -fx-text-fill: #a4d007;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+.badge {
+    -fx-background-color: #66c0f4;
+    -fx-text-fill: #0e1b26;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-padding: 3 8 3 8;
+    -fx-background-radius: 2;
+}
+
+.tag {
+    -fx-background-color: #316282;
+    -fx-text-fill: #d6ecfb;
+    -fx-font-size: 10px;
+    -fx-padding: 3 8 3 8;
+    -fx-background-radius: 2;
+}
+
+.promo-card {
+    -fx-background-color: #1b2838;
+    -fx-border-color: #2a475e;
+    -fx-border-width: 1;
+    -fx-background-radius: 3;
+    -fx-border-radius: 3;
+    -fx-padding: 16;
+}
+
+.sidebar {
+    -fx-background-color: #1b2838;
+    -fx-border-color: #2a475e;
+    -fx-border-width: 1;
+    -fx-background-radius: 3;
+    -fx-border-radius: 3;
+    -fx-padding: 16;
+}
+
+.sidebar-title {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+
+.sidebar-subtitle {
+    -fx-text-fill: #8f98a0;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.sidebar-item {
+    -fx-text-fill: #c6d4df;
+    -fx-font-size: 12px;
+    -fx-padding: 5 2 5 2;
+    -fx-cursor: hand;
+}
+
+.sidebar-item:hover {
+    -fx-text-fill: #66c0f4;
+}
+
+.combo-box, .text-field {
+    -fx-background-color: #316282;
+    -fx-text-fill: #ffffff;
+}
+
+.scroll-pane, .scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+.empty-label {
+    -fx-text-fill: #8f98a0;
+    -fx-font-size: 13px;
+}
+
+/* Biblioteca: elimina o fundo branco padrão do SplitPane e faz o destaque ocupar a área direita. */
+.split-pane,
+.split-pane > .split-pane-divider,
+.library-main,
+.selected-cover-placeholder {
+    -fx-background-color: #171a21;
+}
+
+.library-main {
+    -fx-padding: 0;
+}
+
+.selected-cover-placeholder {
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+
+.library-main .game-card {
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    -fx-padding: 12;
+}
